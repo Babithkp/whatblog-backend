@@ -8,12 +8,12 @@ import {
 } from "../controller/user";
 import { authMiddleware } from "../middleware/auth";
 
-const curdRouter = Router();
+const userRouter = Router();
 
-curdRouter.post("/api/user/signupWithEmail", createNewUser);
-curdRouter.post("/api/user/signupWithGoogle", userLoginWithGoogle);
-curdRouter.post("/api/user/userLogin", userLogin);
-curdRouter.post("/api/user/verifyOtp", authMiddleware, verifyUserOtp);
-curdRouter.get("/api/user", authMiddleware, gerUserById);
+userRouter.post("/api/user/signupWithEmail", createNewUser);
+userRouter.post("/api/user/signupWithGoogle", userLoginWithGoogle);
+userRouter.post("/api/user/userLogin", userLogin);
+userRouter.post("/api/user/verifyOtp", authMiddleware, verifyUserOtp);
+userRouter.get("/api/user", authMiddleware, gerUserById);
 
-export default curdRouter;
+export default userRouter;
