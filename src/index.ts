@@ -5,6 +5,8 @@ import userRouter from "./router/user";
 import bodyParser from "body-parser";
 
 import uploadRouter from "./router/uploadImage";
+import aiAgentRouter from "./router/aiAgent";
+import adminRouter from "./router/admin";
 
 dotenv.config();
 
@@ -21,6 +23,9 @@ app.get("/", (req, res) => {
 app.use(uploadRouter);
 
 app.use(userRouter)
+app.use(adminRouter)
+
+app.use(aiAgentRouter)
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

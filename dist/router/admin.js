@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const admin_1 = require("../controller/admin");
+const adminRouter = (0, express_1.Router)();
+adminRouter.post("/api/admin/createBlog", admin_1.createBlog);
+adminRouter.get("/api/admin/getAllBlogs", admin_1.getAllBlogs);
+adminRouter.get("/api/admin/getBlogById/:id", admin_1.getBlogById);
+adminRouter.delete("/api/admin/deleteBlogById/:id", admin_1.deleteBlogById);
+exports.default = adminRouter;

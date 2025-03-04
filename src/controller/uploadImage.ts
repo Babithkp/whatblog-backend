@@ -1,5 +1,5 @@
 import dotenv from "dotenv";import { Request, Response } from "express";
-import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 
 dotenv.config();
@@ -45,7 +45,7 @@ const s3uploadImageFile = async (fileBuffer: Buffer, fileName: string) => {
 
 export const imageUploadToS3 = async (req: Request, res: Response) => {
     try {
-      const file = req.file;
+      const file = req.file;      
       if (!file) {
         res.status(400).json({ message: "failed to get file" });
         return;
@@ -56,7 +56,7 @@ export const imageUploadToS3 = async (req: Request, res: Response) => {
         file.originalname
       );
       if (uploadResponse) {
-        res.status(200).json({ message: "success", data: uploadResponse });
+        res.status(200).json({ message: "success", link: uploadResponse });
       } else {
         res.status(400).json({ message: "failed" });
       }
