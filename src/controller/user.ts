@@ -258,7 +258,25 @@ export const userLogin = async (req: Request, res: Response) => {
     }
   };
 
-export const gerUserById = async (req: Request, res: Response) => {
+
+  export const getAllBlogs = async (req: Request, res: Response) => {
+    try {
+      const blogs = await prisma.blog.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+      if (!blogs) {
+        res.status(202).json({ message: "Blog not found" });
+        return;
+      }
+      res.status(200).json(blogs);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: "Something went wrong", error });
+    }
+  };
+
+
+export const getUserById = async (req: Request, res: Response) => {
   const { userId } = req.body.userId;
   if(!userId){
     res.status(400).json({ message: "Please provide User ID" });

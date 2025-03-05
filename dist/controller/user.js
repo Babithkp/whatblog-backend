@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gerUserById = exports.userLogin = exports.verifyUserOtp = exports.extentOtpExpiry = exports.createNewUser = exports.userLoginWithGoogle = void 0;
+exports.getUserById = exports.getAllBlogs = exports.userLogin = exports.verifyUserOtp = exports.extentOtpExpiry = exports.createNewUser = exports.userLoginWithGoogle = void 0;
 const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const utils_1 = require("../utils");
@@ -233,7 +233,24 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.userLogin = userLogin;
-const gerUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllBlogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const blogs = yield prisma.blog.findMany({
+            orderBy: { createdAt: "desc" },
+        });
+        if (!blogs) {
+            res.status(202).json({ message: "Blog not found" });
+            return;
+        }
+        res.status(200).json(blogs);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json({ message: "Something went wrong", error });
+    }
+});
+exports.getAllBlogs = getAllBlogs;
+const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.body.userId;
     if (!userId) {
         res.status(400).json({ message: "Please provide User ID" });
@@ -256,4 +273,4 @@ const gerUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ message: "Server Error" });
     }
 });
-exports.gerUserById = gerUserById;
+exports.getUserById = getUserById;
