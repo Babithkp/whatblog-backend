@@ -207,87 +207,84 @@ export const verifyUserOtp = async (req: Request, res: Response) => {
   }
 };
 
-
 export const userLogin = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    if (!email && !password) {
-      res.status(400).json({ message: "Please provide email and password" });
-    }
+  const { email, password } = req.body;
+  if (!email && !password) {
+    res.status(400).json({ message: "Please provide email and password" });
+  }
 
-    if(email === "admin@cadalu.com" && password === "cadalu@123"){
-      res.status(202).json({ message: "admin login success" });
-      return;
-    }
+  if (email === "admin@cadalu.com" && password === "cadalu@123") {
+    res.status(202).json({ message: "admin login success" });
+    return;
+  }
 
-    try {
-      const isExist = await prisma.user.findUnique({
+  try {
+    const isExist = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!isExist) {
+      res.status(201).json({ message: "user does not exist" });
+    } else {
+      const user = await prisma.user.findUnique({
         where: {
           email,
         },
       });
-  
-      if (!isExist) {
-        res.status(201).json({ message: "user does not exist" });
-      } else {
-        const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
-        });
-        if (user?.password === null) {
-          res.status(203).json({ message: "Please Login with Google" });
-          return;
-        }
-        if (user && user.password) {
-          const isPasswordMatch = await bcrypt.compare(password, user.password);
-          if (isPasswordMatch) {
-            const token = jwt.sign(
-              { userId: user.id },
-              process.env.SECRET_KEY as string,
-              { expiresIn: "1d" }
-            );
-            res.status(200).json({ message: "Success", token });
-          } else {
-            res.status(202).json({ message: "Invalid password" });
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ message: "somthing went wrong", error });
-    }
-  };
-
-
-  export const getAllBlogs = async (req: Request, res: Response) => {
-    try {
-      const blogs = await prisma.blog.findMany({
-        orderBy: { createdAt: "desc" },
-      });
-      if (!blogs) {
-        res.status(202).json({ message: "Blog not found" });
+      if (user?.password === null) {
+        res.status(203).json({ message: "Please Login with Google" });
         return;
       }
-      res.status(200).json(blogs);
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ message: "Something went wrong", error });
+      if (user && user.password) {
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (isPasswordMatch) {
+          const token = jwt.sign(
+            { userId: user.id },
+            process.env.SECRET_KEY as string,
+            { expiresIn: "1d" }
+          );
+          res.status(200).json({ message: "Success", token });
+        } else {
+          res.status(202).json({ message: "Invalid password" });
+        }
+      }
     }
-  };
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "somthing went wrong", error });
+  }
+};
 
+export const getAllBlogs = async (req: Request, res: Response) => {
+  try {
+    const blogs = await prisma.blog.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    if (!blogs) {
+      res.status(202).json({ message: "Blog not found" });
+      return;
+    }
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Something went wrong", error });
+  }
+};
 
 export const getUserById = async (req: Request, res: Response) => {
   const { userId } = req.body.userId;
-  if(!userId){
+  if (!userId) {
     res.status(400).json({ message: "Please provide User ID" });
-    return
+    return;
   }
   try {
     const user = await prisma.user.findUnique({
-      where:{
-        id:userId
-      }
-    })
+      where: {
+        id: userId,
+      },
+    });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -296,5 +293,36 @@ export const getUserById = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const getBlogsByQuery = async (req: Request, res: Response) => {
+  const { query } = req.params;
+
+  try {
+    const blogs = await prisma.blog.findMany({
+      where: query
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: query.toString(),
+                  mode: "insensitive",
+                },
+              },
+              {
+                content: {
+                  contains: query.toString(),
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined,
+    });
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Something went wrong", error });
   }
 };

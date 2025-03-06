@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserById = exports.getAllBlogs = exports.userLogin = exports.verifyUserOtp = exports.extentOtpExpiry = exports.createNewUser = exports.userLoginWithGoogle = void 0;
+exports.getBlogsByQuery = exports.getUserById = exports.getAllBlogs = exports.userLogin = exports.verifyUserOtp = exports.extentOtpExpiry = exports.createNewUser = exports.userLoginWithGoogle = void 0;
 const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const utils_1 = require("../utils");
@@ -259,8 +259,8 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const user = yield prisma.user.findUnique({
             where: {
-                id: userId
-            }
+                id: userId,
+            },
         });
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -274,3 +274,34 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getUserById = getUserById;
+const getBlogsByQuery = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { query } = req.params;
+    try {
+        const blogs = yield prisma.blog.findMany({
+            where: query
+                ? {
+                    OR: [
+                        {
+                            title: {
+                                contains: query.toString(),
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            content: {
+                                contains: query.toString(),
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
+                }
+                : undefined,
+        });
+        res.status(200).json(blogs);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json({ message: "Something went wrong", error });
+    }
+});
+exports.getBlogsByQuery = getBlogsByQuery;

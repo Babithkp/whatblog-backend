@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createNewUser,
   getAllBlogs,
+  getBlogsByQuery,
   getUserById,
   userLogin,
   userLoginWithGoogle,
@@ -19,5 +20,6 @@ userRouter.post("/api/user/verifyOtp", authMiddleware, verifyUserOtp);
 userRouter.get("/api/user", authMiddleware, getUserById);
 userRouter.get("/api/user/getBlogById/:id", getBlogById);
 userRouter.get("/api/user/getAllBlogs", getAllBlogs);
+userRouter.get("/api/user/getBlogsByQuery/:query", getBlogsByQuery);
 
 export default userRouter;

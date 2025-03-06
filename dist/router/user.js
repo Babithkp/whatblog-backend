@@ -12,4 +12,5 @@ userRouter.post("/api/user/verifyOtp", auth_1.authMiddleware, user_1.verifyUserO
 userRouter.get("/api/user", auth_1.authMiddleware, user_1.getUserById);
 userRouter.get("/api/user/getBlogById/:id", admin_1.getBlogById);
 userRouter.get("/api/user/getAllBlogs", user_1.getAllBlogs);
+userRouter.get("/api/user/getBlogsByQuery/:query", user_1.getBlogsByQuery);
 exports.default = userRouter;
